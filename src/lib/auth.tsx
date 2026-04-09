@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { supabase } from './supabase'
 import type { Session } from '@supabase/supabase-js'
 import type { Profile, ClubMember } from './types'
@@ -21,75 +21,64 @@ const AuthContext = createContext<AuthState>({
   refreshMembership: async () => {},
 })
 
+async function fetchProfile(userId: string) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle()
+  return data as Profile | null
+}
+
+async function fetchMembership(userId: string) {
+  const { data } = await supabase
+    .from('club_members')
+    .select('*')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle()
+  return data as ClubMember | null
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [membership, setMembership] = useState<ClubMember | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchProfile = useCallback(async (userId: string) => {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle()
-      setProfile(data)
-      return data
-    } catch {
-      return null
-    }
-  }, [])
-
-  const fetchMembership = useCallback(async (userId: string) => {
-    try {
-      const { data } = await supabase
-        .from('club_members')
-        .select('*')
-        .eq('user_id', userId)
-        .limit(1)
-        .maybeSingle()
-      setMembership(data)
-      return data
-    } catch {
-      return null
-    }
-  }, [])
-
-  const refreshProfile = useCallback(async () => {
-    if (session?.user.id) await fetchProfile(session.user.id)
-  }, [session?.user.id, fetchProfile])
-
-  const refreshMembership = useCallback(async () => {
-    if (session?.user.id) await fetchMembership(session.user.id)
-  }, [session?.user.id, fetchMembership])
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    let mounted = true
+    let ignore = false
 
-    const init = async () => {
-      try {
-        const { data: { session: s } } = await supabase.auth.getSession()
-        if (!mounted) return
-        setSession(s)
-        if (s?.user.id) {
-          await fetchProfile(s.user.id)
-          await fetchMembership(s.user.id)
-        }
-      } finally {
-        if (mounted) setLoading(false)
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+      if (ignore) return
+      setSession(s)
+      if (s?.user.id) {
+        const [p, m] = await Promise.all([
+          fetchProfile(s.user.id).catch(() => null),
+          fetchMembership(s.user.id).catch(() => null),
+        ])
+        if (ignore) return
+        setProfile(p)
+        setMembership(m)
       }
-    }
-
-    init()
+      setLoading(false)
+    }).catch(() => {
+      if (!ignore) setLoading(false)
+    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, s) => {
-        if (!mounted) return
+        if (ignore) return
         setSession(s)
         if (s?.user.id) {
-          await fetchProfile(s.user.id)
-          await fetchMembership(s.user.id)
+          const [p, m] = await Promise.all([
+            fetchProfile(s.user.id).catch(() => null),
+            fetchMembership(s.user.id).catch(() => null),
+          ])
+          if (ignore) return
+          setProfile(p)
+          setMembership(m)
         } else {
           setProfile(null)
           setMembership(null)
@@ -98,10 +87,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
 
     return () => {
-      mounted = false
+      ignore = true
       subscription.unsubscribe()
     }
-  }, [fetchProfile, fetchMembership])
+  }, [])
+
+  const refreshProfile = async () => {
+    if (!session?.user.id) return
+    const p = await fetchProfile(session.user.id).catch(() => null)
+    setProfile(p)
+  }
+
+  const refreshMembership = async () => {
+    if (!session?.user.id) return
+    const m = await fetchMembership(session.user.id).catch(() => null)
+    setMembership(m)
+  }
 
   return (
     <AuthContext.Provider value={{ session, profile, membership, loading, refreshProfile, refreshMembership }}>
