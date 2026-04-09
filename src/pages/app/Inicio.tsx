@@ -4,6 +4,7 @@ import { useClub, useClubMembers, useClubEvents, useEventRsvps, useBirthdays } f
 import { supabase } from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import CreatePost from '../../components/CreatePost'
+import NickLink from '../../components/NickLink'
 import PostCard from '../../components/PostCard'
 import type { Post, ClubMemberWithProfile, EventRow } from '../../lib/types'
 
@@ -101,7 +102,7 @@ export default function Inicio() {
               <span className="text-xl">🎂</span>
               <div>
                 <div className="text-sm text-white">
-                  ¡Hoy es cumple de <span className="text-[var(--cyan)] font-medium">@{m.profiles.nickname}</span>!
+                  ¡Hoy es cumple de <NickLink userId={m.user_id} nickname={m.profiles.nickname} />!
                 </div>
                 <div className="text-xs text-white/30">Felicítalo en el grupo</div>
               </div>
@@ -121,7 +122,7 @@ export default function Inicio() {
         if (item.kind === 'member_joined') {
           return (
             <ActivityCard key={`member-${item.data.id}`} date={item.date}>
-              <span className="text-[var(--cyan)]">@{item.data.profiles.nickname}</span> se unió al club
+              <NickLink userId={item.data.user_id} nickname={item.data.profiles.nickname} /> se unió al club
             </ActivityCard>
           )
         }

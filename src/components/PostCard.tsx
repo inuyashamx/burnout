@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import ConfirmModal from './ConfirmModal'
+import NickLink from './NickLink'
 import type { Post, PostReaction, PostComment, ReactionType } from '../lib/types'
 
 const REACTIONS: { type: ReactionType; emoji: string }[] = [
@@ -114,7 +115,7 @@ export default function PostCard({ post, onDeleted }: { post: Post; onDeleted?: 
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium text-white">@{post.profiles?.nickname}</span>
+          {post.profiles && <NickLink userId={post.user_id} nickname={post.profiles.nickname} className="text-sm text-white" />}
           <span className="text-xs text-white/25 ml-2">{timeAgo}</span>
         </div>
         {isMyPost && (
@@ -210,7 +211,7 @@ export default function PostCard({ post, onDeleted }: { post: Post; onDeleted?: 
                 </span>
               </div>
               <div>
-                <span className="text-xs font-medium text-white/70">@{c.profiles?.nickname}</span>
+                {c.profiles && <NickLink userId={c.user_id} nickname={c.profiles.nickname} className="text-xs text-white/70" />}
                 <p className="text-xs text-white/50">{c.content}</p>
               </div>
             </div>

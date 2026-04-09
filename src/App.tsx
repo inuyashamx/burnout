@@ -29,6 +29,7 @@ import AddCar from './pages/app/AddCar'
 import Notifications from './pages/app/Notifications'
 import EditProfile from './pages/app/EditProfile'
 import EditCar from './pages/app/EditCar'
+import UserProfile from './pages/app/UserProfile'
 import EditEvent from './pages/app/EditEvent'
 import EventDetail from './pages/app/EventDetail'
 import Birthdays from './pages/app/Birthdays'
@@ -90,6 +91,7 @@ export default function App() {
             <Route path="perfil/add-car" element={<AddCar />} />
             <Route path="perfil/cars/:carId/edit" element={<EditCar />} />
             <Route path="perfil/notifications" element={<Notifications />} />
+            <Route path="user/:userId" element={<UserProfile />} />
           </Route>
 
           {/* Fallback */}

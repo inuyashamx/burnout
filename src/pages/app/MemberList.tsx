@@ -4,6 +4,7 @@ import { useAuth } from '../../lib/auth'
 import { useClub, useClubMembers } from '../../lib/hooks'
 import { supabase } from '../../lib/supabase'
 import ConfirmModal from '../../components/ConfirmModal'
+import NickLink from '../../components/NickLink'
 
 const ROLE_LABELS: Record<string, string> = {
   leader: 'Líder',
@@ -99,7 +100,7 @@ export default function MemberList() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white truncate">@{m.profiles.nickname}</div>
+              <NickLink userId={m.user_id} nickname={m.profiles.nickname} className="text-sm text-white" />
               <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-semibold ${ROLE_COLORS[m.role]}`}>
                 {ROLE_LABELS[m.role]}
               </span>
