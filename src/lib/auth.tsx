@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import { supabase } from './supabase'
 import type { Session } from '@supabase/supabase-js'
 import type { Profile, ClubMember } from './types'
@@ -27,47 +27,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [membership, setMembership] = useState<ClubMember | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-    setProfile(data)
-    return data
-  }
+  const fetchProfile = useCallback(async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle()
+      setProfile(data)
+      return data
+    } catch {
+      return null
+    }
+  }, [])
 
-  const fetchMembership = async (userId: string) => {
-    const { data } = await supabase
-      .from('club_members')
-      .select('*')
-      .eq('user_id', userId)
-      .limit(1)
-      .maybeSingle()
-    setMembership(data)
-    return data
-  }
+  const fetchMembership = useCallback(async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('club_members')
+        .select('*')
+        .eq('user_id', userId)
+        .limit(1)
+        .maybeSingle()
+      setMembership(data)
+      return data
+    } catch {
+      return null
+    }
+  }, [])
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (session?.user.id) await fetchProfile(session.user.id)
-  }
+  }, [session?.user.id, fetchProfile])
 
-  const refreshMembership = async () => {
+  const refreshMembership = useCallback(async () => {
     if (session?.user.id) await fetchMembership(session.user.id)
-  }
+  }, [session?.user.id, fetchMembership])
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
-      setSession(s)
-      if (s?.user.id) {
-        await fetchProfile(s.user.id)
-        await fetchMembership(s.user.id)
+    let mounted = true
+
+    const init = async () => {
+      try {
+        const { data: { session: s } } = await supabase.auth.getSession()
+        if (!mounted) return
+        setSession(s)
+        if (s?.user.id) {
+          await fetchProfile(s.user.id)
+          await fetchMembership(s.user.id)
+        }
+      } finally {
+        if (mounted) setLoading(false)
       }
-      setLoading(false)
-    })
+    }
+
+    init()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, s) => {
+        if (!mounted) return
         setSession(s)
         if (s?.user.id) {
           await fetchProfile(s.user.id)
@@ -76,12 +94,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null)
           setMembership(null)
         }
-        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [fetchProfile, fetchMembership])
 
   return (
     <AuthContext.Provider value={{ session, profile, membership, loading, refreshProfile, refreshMembership }}>
