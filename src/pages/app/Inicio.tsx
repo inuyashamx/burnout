@@ -1,7 +1,11 @@
+import { useEffect, useState } from 'react'
 import { useAuth } from '../../lib/auth'
 import { useClub, useClubMembers, useClubEvents, useEventRsvps, useBirthdays } from '../../lib/hooks'
 import { supabase } from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import CreatePost from '../../components/CreatePost'
+import PostCard from '../../components/PostCard'
+import type { Post } from '../../lib/types'
 
 export default function Inicio() {
   const { session, membership } = useAuth()
@@ -9,7 +13,21 @@ export default function Inicio() {
   const { members } = useClubMembers(club?.id)
   const { events } = useClubEvents(club?.id)
   const birthdays = useBirthdays(club?.id)
+  const [posts, setPosts] = useState<Post[]>([])
   const navigate = useNavigate()
+
+  const loadPosts = () => {
+    if (!club?.id) return
+    supabase
+      .from('posts')
+      .select('*, profiles(*)')
+      .eq('club_id', club.id)
+      .order('created_at', { ascending: false })
+      .limit(30)
+      .then(({ data }) => setPosts((data as Post[]) ?? []))
+  }
+
+  useEffect(() => { loadPosts() }, [club?.id])
 
   const now = new Date().toISOString()
   const nextEvent = events.find((e) => e.date_time >= now)
@@ -80,20 +98,19 @@ export default function Inicio() {
         </div>
       )}
 
-      {/* Recent activity */}
-      <div>
-        <div className="text-[10px] tracking-widest uppercase text-white/25 mb-2">Actividad reciente</div>
-        {members.slice(-5).reverse().map((m) => (
-          <div key={m.id} className="py-2.5 border-b border-white/[0.04] text-sm text-white/50">
-            <span className="text-[var(--cyan)]">@{m.profiles.nickname}</span> se unió al club
-          </div>
-        ))}
-        {events.slice(0, 3).map((e) => (
-          <div key={e.id} className="py-2.5 border-b border-white/[0.04] text-sm text-white/50">
-            Nuevo evento: <span className="text-white">{e.title}</span>
-          </div>
-        ))}
-      </div>
+      {/* Create post */}
+      <CreatePost clubId={club.id} onCreated={loadPosts} />
+
+      {/* Posts feed */}
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+
+      {posts.length === 0 && (
+        <p className="text-center text-white/20 text-sm py-4">
+          Sé el primero en publicar algo
+        </p>
+      )}
     </div>
   )
 }

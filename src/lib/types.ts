@@ -60,6 +60,35 @@ export interface EventRsvp {
   created_at: string
 }
 
+export type ReactionType = 'like' | 'fire' | 'angry' | 'poop' | 'laugh'
+
+export interface Post {
+  id: string
+  club_id: string
+  user_id: string
+  content: string | null
+  photos: string[]
+  created_at: string
+  profiles?: Profile
+}
+
+export interface PostReaction {
+  id: string
+  post_id: string
+  user_id: string
+  type: ReactionType
+  created_at: string
+}
+
+export interface PostComment {
+  id: string
+  post_id: string
+  user_id: string
+  content: string
+  created_at: string
+  profiles?: Profile
+}
+
 export interface Notification {
   id: string
   user_id: string
