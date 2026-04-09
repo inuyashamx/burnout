@@ -25,7 +25,10 @@
       "Bash(curl -sI \"https://burnout-inuyashamxs-projects.vercel.app/login\")",
       "Read(//c/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/**)",
       "Bash(ls \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)",
-      "Bash(cat \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)"
+      "Bash(cat \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)",
+      "mcp__plugin_vercel_vercel__search_vercel_documentation",
+      "mcp__plugin_vercel_vercel__list_teams",
+      "mcp__plugin_vercel_vercel__list_projects"
     ]
   },
   "enableAllProjectMcpServers": true,
