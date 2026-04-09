@@ -4,7 +4,7 @@ import { useMyCars } from '../../lib/hooks'
 import { supabase } from '../../lib/supabase'
 
 export default function Perfil() {
-  const { profile, session } = useAuth()
+  const { profile } = useAuth()
   const { cars } = useMyCars()
   const navigate = useNavigate()
 
@@ -35,6 +35,12 @@ export default function Perfil() {
         </div>
         <div className="font-bold text-lg text-white">@{profile.nickname}</div>
         <div className="text-xs text-white/35 mt-0.5">🎂 {birthdayDisplay}</div>
+        <button
+          onClick={() => navigate('/app/perfil/edit')}
+          className="mt-2 text-xs text-[var(--cyan)] hover:underline"
+        >
+          Editar perfil
+        </button>
       </div>
 
       {/* Garage */}
@@ -48,7 +54,11 @@ export default function Perfil() {
         ) : (
           <div className="space-y-2">
             {cars.map((car) => (
-              <div key={car.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div
+                key={car.id}
+                onClick={() => navigate(`/app/perfil/cars/${car.id}/edit`)}
+                className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors"
+              >
                 <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--cyan)]/[0.06] flex-shrink-0 flex items-center justify-center">
                   {car.photos.length > 0 ? (
                     <img src={car.photos[0]} alt="" className="w-full h-full object-cover" />
@@ -56,7 +66,7 @@ export default function Perfil() {
                     <span className="text-xl">🚗</span>
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   {car.nickname && (
                     <div className="font-semibold text-sm text-white">"{car.nickname}"</div>
                   )}
@@ -64,6 +74,7 @@ export default function Perfil() {
                     {car.make} {car.model} · {car.year}
                   </div>
                 </div>
+                <span className="text-white/15 text-xs">→</span>
               </div>
             ))}
           </div>

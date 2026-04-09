@@ -116,7 +116,7 @@ export default function Inicio() {
       {/* Unified feed */}
       {feedItems.map((item) => {
         if (item.kind === 'post') {
-          return <PostCard key={`post-${item.data.id}`} post={item.data} />
+          return <PostCard key={`post-${item.data.id}`} post={item.data} onDeleted={loadPosts} />
         }
         if (item.kind === 'member_joined') {
           return (

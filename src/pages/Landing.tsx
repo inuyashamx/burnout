@@ -111,9 +111,9 @@ export default function Landing() {
         <div className="glow-line max-w-[200px] my-6 animate-fade-in delay-400" />
 
         <p className="max-w-md text-white/50 text-base sm:text-lg leading-relaxed animate-fade-in-up delay-500">
-          Crea tu club, encuentra tu crew, salgan a rodar.
+          Tu club, tu crew, tu camino.
           <br className="hidden sm:inline" />
-          <span className="text-white/30">Cada viernes es una historia nueva.</span>
+          <span className="text-white/30">Organiza, conecta y sal a rodar.</span>
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-10 w-full sm:w-auto animate-fade-in-up delay-600">

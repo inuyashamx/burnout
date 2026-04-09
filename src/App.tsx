@@ -27,6 +27,8 @@ import ClubSettings from './pages/app/ClubSettings'
 import Perfil from './pages/app/Perfil'
 import AddCar from './pages/app/AddCar'
 import Notifications from './pages/app/Notifications'
+import EditProfile from './pages/app/EditProfile'
+import EditCar from './pages/app/EditCar'
 import EditEvent from './pages/app/EditEvent'
 import EventDetail from './pages/app/EventDetail'
 import Birthdays from './pages/app/Birthdays'
@@ -84,7 +86,9 @@ export default function App() {
             <Route path="club/merch/add" element={<AddMerchItem />} />
             <Route path="club/merch/requests" element={<MerchRequests />} />
             <Route path="perfil" element={<Perfil />} />
+            <Route path="perfil/edit" element={<EditProfile />} />
             <Route path="perfil/add-car" element={<AddCar />} />
+            <Route path="perfil/cars/:carId/edit" element={<EditCar />} />
             <Route path="perfil/notifications" element={<Notifications />} />
           </Route>
 
