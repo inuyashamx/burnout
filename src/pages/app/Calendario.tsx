@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useClub, useClubEvents } from '../../lib/hooks'
 
 const DAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
@@ -8,6 +9,7 @@ export default function Calendario() {
   const { events, loading } = useClubEvents(club?.id)
   const [viewDate, setViewDate] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const navigate = useNavigate()
 
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
@@ -36,7 +38,15 @@ export default function Calendario() {
 
   const monthName = viewDate.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })
 
-  const selectedEvents = selectedDay ? eventsByDay[selectedDay] ?? [] : []
+  // Show all events for this month, or filter by selected day
+  const monthEvents = events
+    .filter((e) => {
+      const d = new Date(e.date_time)
+      return d.getFullYear() === year && d.getMonth() === month
+    })
+    .sort((a, b) => new Date(a.date_time).getTime() - new Date(b.date_time).getTime())
+
+  const displayEvents = selectedDay ? (eventsByDay[selectedDay] ?? []) : monthEvents
 
   return (
     <div className="p-5">
@@ -95,33 +105,44 @@ export default function Calendario() {
         })}
       </div>
 
-      {/* Selected day events */}
-      {selectedDay && (
-        <div className="space-y-2">
-          {selectedEvents.length === 0 ? (
-            <p className="text-white/30 text-sm text-center py-4">No hay eventos este día</p>
-          ) : (
-            selectedEvents.map((e) => {
+      {/* Events list */}
+      <div>
+        {selectedDay && (
+          <button onClick={() => setSelectedDay(null)} className="text-xs text-[var(--cyan)] hover:underline mb-2">
+            ← Ver todos los eventos
+          </button>
+        )}
+
+        <div className="text-[10px] tracking-widest uppercase text-white/25 mb-2">
+          {selectedDay ? `Eventos del ${selectedDay}` : 'Eventos del mes'}
+        </div>
+
+        {displayEvents.length === 0 ? (
+          <p className="text-white/30 text-sm text-center py-4">No hay eventos{selectedDay ? ' este día' : ' este mes'}</p>
+        ) : (
+          <div className="space-y-2">
+            {displayEvents.map((e) => {
               const dt = new Date(e.date_time)
+              const dateLabel = dt.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric' })
               const time = dt.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
               return (
-                <div key={e.id} className="p-3 rounded-xl bg-[var(--cyan)]/[0.04] border-l-[3px] border-[var(--cyan)]">
+                <div
+                  key={e.id}
+                  onClick={() => navigate(`/app/club/events/${e.id}`)}
+                  className="p-3 rounded-xl bg-[var(--cyan)]/[0.04] border-l-[3px] border-[var(--cyan)] cursor-pointer hover:bg-[var(--cyan)]/[0.07] transition-colors"
+                >
                   <div className="font-semibold text-sm text-white">{e.title}</div>
                   <div className="text-xs text-white/40 mt-0.5">
+                    {!selectedDay && <span className="capitalize">{dateLabel} · </span>}
                     {time}
                     {e.location && ` · ${e.location}`}
                   </div>
-                  {e.event_type && (
-                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] bg-[var(--cyan)]/10 text-[var(--cyan)]">
-                      {e.event_type}
-                    </span>
-                  )}
                 </div>
               )
-            })
-          )}
-        </div>
-      )}
+            })}
+          </div>
+        )}
+      </div>
 
       {loading && <p className="text-white/30 text-sm text-center py-4">Cargando...</p>}
     </div>
