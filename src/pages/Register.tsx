@@ -5,7 +5,7 @@ export default function Register() {
   const handleGoogleRegister = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {},
+      options: { redirectTo: window.location.origin },
     })
   }
 
