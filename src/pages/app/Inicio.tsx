@@ -128,7 +128,7 @@ export default function Inicio() {
         }
         if (item.kind === 'event_created') {
           return (
-            <ActivityCard key={`event-${item.data.id}`} date={item.date}>
+            <ActivityCard key={`event-${item.data.id}`} date={item.date} onClick={() => navigate(`/app/club/events/${item.data.id}`)}>
               Nuevo evento: <span className="text-white font-medium">{item.data.title}</span>
             </ActivityCard>
           )
@@ -145,10 +145,10 @@ export default function Inicio() {
   )
 }
 
-function ActivityCard({ children, date }: { children: React.ReactNode; date: string }) {
+function ActivityCard({ children, date, onClick }: { children: React.ReactNode; date: string; onClick?: () => void }) {
   const timeAgo = getTimeAgo(date)
   return (
-    <div className="flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white/[0.015] border border-white/[0.04]">
+    <div onClick={onClick} className={`flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white/[0.015] border border-white/[0.04] ${onClick ? 'cursor-pointer hover:bg-white/[0.03] transition-colors' : ''}`}>
       <div className="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-xs flex-shrink-0">
         📋
       </div>
