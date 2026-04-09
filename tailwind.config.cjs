@@ -4,10 +4,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gold: {
-          DEFAULT: '#D4A853',
-          light: '#E8C97A',
-          dark: '#A07D3A',
+        cyan: {
+          DEFAULT: '#00E5FF',
+          light: '#40F8FF',
+          dark: '#0097A7',
         },
         surface: {
           DEFAULT: '#111111',

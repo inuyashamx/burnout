@@ -1,18 +1,17 @@
 import { Link } from 'react-router-dom'
-import { getSupabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 
 export default function Login() {
   const handleGoogleLogin = async () => {
-    await getSupabase().auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
   }
 
   return (
     <div className="relative min-h-[100dvh] flex flex-col items-center justify-center px-5 noise-overlay">
       <div className="w-full max-w-sm animate-fade-in-up">
-        {/* Back link */}
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-10"
@@ -23,7 +22,6 @@ export default function Login() {
           Volver
         </Link>
 
-        {/* Header */}
         <h1 className="font-display text-4xl sm:text-5xl tracking-tight text-white mb-2">
           BIENVENIDO
         </h1>
@@ -31,7 +29,6 @@ export default function Login() {
           Inicia sesión para acceder a tu club
         </p>
 
-        {/* Google button */}
         <button
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded bg-white text-gray-900 font-semibold text-sm tracking-wide transition-all duration-200 hover:bg-gray-100 active:scale-[0.98]"
@@ -45,17 +42,15 @@ export default function Login() {
           Continuar con Google
         </button>
 
-        {/* Divider */}
         <div className="flex items-center gap-3 my-8">
           <div className="flex-1 h-px bg-white/[0.06]" />
           <span className="text-xs text-white/20 uppercase tracking-widest">o</span>
           <div className="flex-1 h-px bg-white/[0.06]" />
         </div>
 
-        {/* Register CTA */}
         <p className="text-center text-sm text-white/30">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-gold hover:text-gold-light transition-colors font-medium">
+          <Link to="/register" className="text-cyan hover:text-cyan-light transition-colors font-medium">
             Regístrate
           </Link>
         </p>

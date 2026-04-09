@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
-import { getSupabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 
 export default function Register() {
   const handleGoogleRegister = async () => {
-    await getSupabase().auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
   }
 
@@ -50,7 +50,7 @@ export default function Register() {
 
         <p className="text-center text-sm text-white/30">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-gold hover:text-gold-light transition-colors font-medium">
+          <Link to="/login" className="text-cyan hover:text-cyan-light transition-colors font-medium">
             Inicia sesión
           </Link>
         </p>

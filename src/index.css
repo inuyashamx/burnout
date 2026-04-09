@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --gold: #D4A853;
-    --gold-light: #E8C97A;
-    --gold-dark: #A07D3A;
+    --cyan: #00E5FF;
+    --cyan-light: #40F8FF;
+    --cyan-dark: #0097A7;
     --surface: #111111;
     --surface-light: #1a1a1a;
     --surface-lighter: #222222;
@@ -23,7 +23,7 @@
   }
 
   ::selection {
-    background: var(--gold);
+    background: var(--cyan);
     color: #0a0a0a;
   }
 }
@@ -33,34 +33,34 @@
     font-family: 'Bebas Neue', sans-serif;
   }
 
-  .btn-gold {
+  .btn-cyan {
     @apply relative inline-flex items-center justify-center px-8 py-3.5 font-semibold text-sm tracking-wider uppercase overflow-hidden transition-all duration-300;
-    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-light));
     color: #0a0a0a;
   }
 
-  .btn-gold::before {
+  .btn-cyan::before {
     content: '';
     @apply absolute inset-0 transition-opacity duration-300 opacity-0;
-    background: linear-gradient(135deg, var(--gold-light), #fff);
+    background: linear-gradient(135deg, var(--cyan-light), #fff);
   }
 
-  .btn-gold:hover::before {
+  .btn-cyan:hover::before {
     @apply opacity-20;
   }
 
-  .btn-gold:active {
+  .btn-cyan:active {
     transform: scale(0.97);
   }
 
   .btn-outline {
     @apply relative inline-flex items-center justify-center px-8 py-3.5 font-semibold text-sm tracking-wider uppercase transition-all duration-300 border;
-    border-color: var(--gold);
-    color: var(--gold);
+    border-color: var(--cyan);
+    color: var(--cyan);
   }
 
   .btn-outline:hover {
-    background: rgba(212, 168, 83, 0.08);
+    background: rgba(0, 229, 255, 0.08);
   }
 
   .btn-outline:active {
@@ -69,17 +69,17 @@
 
   .glow-line {
     @apply h-px w-full;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
   }
 }
 
 @layer utilities {
-  .text-gold {
-    color: var(--gold);
+  .text-cyan {
+    color: var(--cyan);
   }
 
-  .text-gold-light {
-    color: var(--gold-light);
+  .text-cyan-light {
+    color: var(--cyan-light);
   }
 
   .bg-surface {
@@ -182,7 +182,7 @@
   position: absolute;
   width: 150px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), transparent);
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--cyan-light), transparent);
   animation: lightStreak 4s ease-in-out infinite;
   filter: blur(1px);
 }
@@ -222,10 +222,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gold-dark);
+  background: var(--cyan-dark);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
+  background: var(--cyan);
+}
+
+/* Safe area for iOS PWA */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }

@@ -43,7 +43,7 @@ export default function InstallPWA() {
   return (
     <button
       onClick={handleInstall}
-      className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-white/70 transition-all duration-300 hover:border-[var(--gold)]/40 hover:text-[var(--gold)] hover:bg-[var(--gold)]/5 active:scale-95"
+      className="group flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-white/70 transition-all duration-300 hover:border-[var(--cyan)]/40 hover:text-[var(--cyan)] hover:bg-[var(--cyan)]/5 active:scale-95"
     >
       <svg
         className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5"

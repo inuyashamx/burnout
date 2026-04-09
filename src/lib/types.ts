@@ -1,0 +1,72 @@
+export interface Profile {
+  id: string
+  nickname: string
+  birthday: string
+  avatar_url: string | null
+  created_at: string
+}
+
+export interface Car {
+  id: string
+  user_id: string
+  nickname: string | null
+  make: string
+  model: string
+  year: number
+  photos: string[]
+  created_at: string
+}
+
+export interface Club {
+  id: string
+  name: string
+  description: string | null
+  logo_url: string | null
+  whatsapp_link: string | null
+  requires_approval: boolean
+  created_by: string
+  created_at: string
+}
+
+export interface ClubMember {
+  id: string
+  club_id: string
+  user_id: string
+  role: 'leader' | 'admin' | 'member'
+  joined_at: string
+}
+
+export interface ClubMemberWithProfile extends ClubMember {
+  profiles: Profile
+}
+
+export interface EventRow {
+  id: string
+  club_id: string
+  title: string
+  description: string | null
+  date_time: string
+  location: string | null
+  event_type: string | null
+  created_by: string
+  created_at: string
+}
+
+export interface EventRsvp {
+  id: string
+  event_id: string
+  user_id: string
+  status: 'going' | 'not_going' | 'maybe'
+  created_at: string
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: string
+  title: string
+  body: string | null
+  read: boolean
+  data: Record<string, unknown>
+  created_at: string
+}

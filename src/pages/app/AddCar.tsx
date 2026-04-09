@@ -1,0 +1,119 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth'
+
+export default function AddCar() {
+  const { session } = useAuth()
+  const navigate = useNavigate()
+  const [carNickname, setCarNickname] = useState('')
+  const [make, setMake] = useState('')
+  const [model, setModel] = useState('')
+  const [year, setYear] = useState('')
+  const [photos, setPhotos] = useState<File[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const handlePhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []).slice(0, 5)
+    setPhotos(files)
+    setPreviews(files.map((f) => URL.createObjectURL(f)))
+  }
+
+  const handleSave = async () => {
+    if (!make.trim() || !model.trim() || !year.trim()) {
+      return setError('Marca, modelo y año son obligatorios')
+    }
+    if (!session?.user.id) return
+
+    setSaving(true)
+    setError('')
+
+    const photoUrls: string[] = []
+    for (const photo of photos) {
+      const ext = photo.name.split('.').pop()
+      const path = `${session.user.id}/cars/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const { error: uploadErr } = await supabase.storage.from('media').upload(path, photo)
+      if (!uploadErr) {
+        const { data } = supabase.storage.from('media').getPublicUrl(path)
+        photoUrls.push(data.publicUrl)
+      }
+    }
+
+    const { error: err } = await supabase.from('cars').insert({
+      user_id: session.user.id,
+      nickname: carNickname.trim() || null,
+      make: make.trim(),
+      model: model.trim(),
+      year: parseInt(year),
+      photos: photoUrls,
+    })
+
+    setSaving(false)
+    if (err) return setError('Error al guardar. Intenta de nuevo.')
+    navigate(-1)
+  }
+
+  return (
+    <div className="p-5 animate-fade-in-up">
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-6">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        Volver
+      </button>
+
+      <h1 className="font-display text-3xl tracking-tight text-white mb-6">AGREGAR CARRO</h1>
+
+      {/* Photos */}
+      <div className="mb-5">
+        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Fotos (hasta 5)</span>
+        <label className="flex flex-wrap gap-2 cursor-pointer">
+          {previews.map((src, i) => (
+            <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-white/10">
+              <img src={src} alt="" className="w-full h-full object-cover" />
+            </div>
+          ))}
+          {previews.length < 5 && (
+            <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[var(--cyan)]/30 flex items-center justify-center text-[var(--cyan)]/60">
+              <span className="text-xl">+</span>
+            </div>
+          )}
+          <input type="file" accept="image/*" multiple onChange={handlePhotos} className="hidden" />
+        </label>
+      </div>
+
+      <label className="block mb-3">
+        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Apodo</span>
+        <input type="text" value={carNickname} onChange={(e) => setCarNickname(e.target.value)} placeholder='"La Bestia"'
+          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors" />
+      </label>
+
+      <div className="flex gap-3 mb-3">
+        <label className="flex-1">
+          <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Marca *</span>
+          <input type="text" value={make} onChange={(e) => setMake(e.target.value)} placeholder="Ford"
+            className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors" />
+        </label>
+        <label className="flex-1">
+          <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Modelo *</span>
+          <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Mustang GT"
+            className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors" />
+        </label>
+      </div>
+
+      <label className="block mb-5">
+        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Año *</span>
+        <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="2016" min={1950} max={2030}
+          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors" />
+      </label>
+
+      {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+
+      <button onClick={handleSave} disabled={saving} className="btn-cyan rounded w-full disabled:opacity-50">
+        {saving ? 'Guardando...' : 'Guardar Carro'}
+      </button>
+    </div>
+  )
+}

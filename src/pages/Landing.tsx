@@ -14,25 +14,22 @@ function SpeedLines() {
 function HeroGlow() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Top-right amber glow — headlight wash */}
       <div
         className="absolute -top-1/4 -right-1/4 w-[80vw] h-[80vw] rounded-full opacity-[0.07]"
         style={{
-          background: 'radial-gradient(circle, var(--gold) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, var(--cyan) 0%, transparent 70%)',
         }}
       />
-      {/* Bottom-left subtle blue — ambient cold light */}
       <div
         className="absolute -bottom-1/3 -left-1/4 w-[60vw] h-[60vw] rounded-full opacity-[0.04]"
         style={{
-          background: 'radial-gradient(circle, #4A90D9 0%, transparent 70%)',
+          background: 'radial-gradient(circle, #0097A7 0%, transparent 70%)',
         }}
       />
-      {/* Center horizon line glow */}
       <div
         className="absolute top-1/2 left-0 right-0 h-px opacity-[0.08]"
         style={{
-          background: 'linear-gradient(90deg, transparent 5%, var(--gold) 50%, transparent 95%)',
+          background: 'linear-gradient(90deg, transparent 5%, var(--cyan) 50%, transparent 95%)',
           filter: 'blur(2px)',
         }}
       />
@@ -43,15 +40,13 @@ function HeroGlow() {
 function CarSilhouette() {
   return (
     <div className="absolute bottom-0 left-0 right-0 pointer-events-none overflow-hidden" aria-hidden="true">
-      {/* Ground reflection */}
       <div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90vw] max-w-3xl h-24 opacity-[0.06]"
         style={{
-          background: 'radial-gradient(ellipse at center bottom, var(--gold) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center bottom, var(--cyan) 0%, transparent 70%)',
           filter: 'blur(20px)',
         }}
       />
-      {/* Simple geometric car silhouette */}
       <svg
         className="w-full max-w-2xl mx-auto opacity-[0.06]"
         viewBox="0 0 800 200"
@@ -59,11 +54,11 @@ function CarSilhouette() {
       >
         <path
           d="M100 160 L180 160 L220 110 L340 80 L500 75 L600 85 L680 110 L720 160 L780 160"
-          stroke="var(--gold)"
+          stroke="var(--cyan)"
           strokeWidth="1.5"
         />
-        <ellipse cx="240" cy="165" rx="35" ry="35" stroke="var(--gold)" strokeWidth="1" />
-        <ellipse cx="620" cy="165" rx="35" ry="35" stroke="var(--gold)" strokeWidth="1" />
+        <ellipse cx="240" cy="165" rx="35" ry="35" stroke="var(--cyan)" strokeWidth="1" />
+        <ellipse cx="620" cy="165" rx="35" ry="35" stroke="var(--cyan)" strokeWidth="1" />
       </svg>
     </div>
   )
@@ -76,36 +71,30 @@ export default function Landing() {
       <HeroGlow />
       <CarSilhouette />
 
-      {/* --- Nav --- */}
       <nav className="relative z-10 flex items-center justify-between px-5 sm:px-8 py-5 animate-fade-in">
         <div className="flex items-center gap-2">
-          {/* Logo mark — stylized steering wheel / V */}
           <div className="relative w-8 h-8 flex items-center justify-center">
             <div
-              className="absolute inset-0 rounded-full border border-[var(--gold)]/30"
-              style={{ background: 'radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 70%)' }}
+              className="absolute inset-0 rounded-full border border-[var(--cyan)]/30"
+              style={{ background: 'radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%)' }}
             />
-            <span className="font-display text-gold text-lg leading-none tracking-tight">V</span>
+            <span className="font-display text-cyan text-lg leading-none tracking-tight">V</span>
           </div>
           <span className="font-display text-lg tracking-wide text-white/90 hidden sm:inline">
             YCEV
           </span>
         </div>
-
         <InstallPWA />
       </nav>
 
-      {/* --- Hero --- */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 sm:px-8 text-center pb-20">
-        {/* Tagline chip */}
         <div className="animate-fade-in-up delay-100 mb-6">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] text-xs tracking-widest uppercase text-white/40">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--cyan)] animate-pulse" />
             Club de Autos
           </span>
         </div>
 
-        {/* Main heading */}
         <h1 className="animate-fade-in-up delay-200">
           <span className="block font-display text-[clamp(3rem,12vw,7rem)] leading-[0.9] tracking-tight text-white">
             YA CASI ES
@@ -113,7 +102,7 @@ export default function Landing() {
           <span
             className="block font-display text-[clamp(3.5rem,14vw,8.5rem)] leading-[0.85] tracking-tight animate-reveal-text delay-400"
             style={{
-              background: 'linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dark) 100%)',
+              background: 'linear-gradient(135deg, var(--cyan-light) 0%, var(--cyan) 40%, var(--cyan-dark) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -122,19 +111,16 @@ export default function Landing() {
           </span>
         </h1>
 
-        {/* Separator */}
         <div className="glow-line max-w-[200px] my-6 animate-fade-in delay-400" />
 
-        {/* Description */}
         <p className="max-w-md text-white/50 text-base sm:text-lg leading-relaxed animate-fade-in-up delay-500">
           Crea tu club, encuentra tu crew, salgan a rodar.
           <br className="hidden sm:inline" />
           <span className="text-white/30">Cada viernes es una historia nueva.</span>
         </p>
 
-        {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-10 w-full sm:w-auto animate-fade-in-up delay-600">
-          <Link to="/register" className="btn-gold rounded w-full sm:w-auto min-w-[200px]">
+          <Link to="/register" className="btn-cyan rounded w-full sm:w-auto min-w-[200px]">
             Registrarse
           </Link>
           <Link to="/login" className="btn-outline rounded w-full sm:w-auto min-w-[200px]">
@@ -142,7 +128,6 @@ export default function Landing() {
           </Link>
         </div>
 
-        {/* Social proof / stats */}
         <div className="flex items-center gap-6 sm:gap-10 mt-14 animate-fade-in delay-700">
           <Stat value="200+" label="Miembros" />
           <div className="w-px h-8 bg-white/[0.06]" />
@@ -152,7 +137,6 @@ export default function Landing() {
         </div>
       </main>
 
-      {/* --- Bottom features strip --- */}
       <footer className="relative z-10 border-t border-white/[0.04] bg-white/[0.01]">
         <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-white/[0.04]">
           <FeatureCard
@@ -195,7 +179,7 @@ export default function Landing() {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="text-center">
-      <div className="font-display text-2xl sm:text-3xl text-gold tracking-tight">{value}</div>
+      <div className="font-display text-2xl sm:text-3xl text-cyan tracking-tight">{value}</div>
       <div className="text-[10px] sm:text-xs tracking-widest uppercase text-white/30 mt-0.5">{label}</div>
     </div>
   )
@@ -214,7 +198,7 @@ function FeatureCard({
 }) {
   return (
     <div className={`flex-1 flex items-center gap-3.5 px-5 sm:px-6 py-4 sm:py-5 animate-fade-in-up ${delay}`}>
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--gold)]/[0.06] border border-[var(--gold)]/[0.1] flex items-center justify-center text-gold">
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[var(--cyan)]/[0.06] border border-[var(--cyan)]/[0.1] flex items-center justify-center text-cyan">
         {icon}
       </div>
       <div>
