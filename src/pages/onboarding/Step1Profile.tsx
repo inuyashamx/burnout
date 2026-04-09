@@ -75,7 +75,7 @@ export default function Step1Profile() {
 
       {/* Birthday */}
       <label className="block mb-6">
-        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Fecha de nacimiento *</span>
+        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">¿Cuándo es tu cumpleaños? *</span>
         <input
           type="date"
           value={birthday}

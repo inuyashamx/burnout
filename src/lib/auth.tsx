@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
     setProfile(data)
     return data
   }
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select('*')
       .eq('user_id', userId)
       .limit(1)
-      .single()
+      .maybeSingle()
     setMembership(data)
     return data
   }
