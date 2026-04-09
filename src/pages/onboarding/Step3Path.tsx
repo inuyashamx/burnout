@@ -33,12 +33,6 @@ export default function Step3Path() {
           onClick={() => navigate('/onboarding/create-club')}
           accent
         />
-        <PathCard
-          emoji="🚗"
-          title="Soy independiente"
-          desc="Explora sin club, únete después"
-          onClick={() => navigate('/app')}
-        />
       </div>
     </div>
   )
