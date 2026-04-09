@@ -28,7 +28,9 @@
       "Bash(cat \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)",
       "mcp__plugin_vercel_vercel__search_vercel_documentation",
       "mcp__plugin_vercel_vercel__list_teams",
-      "mcp__plugin_vercel_vercel__list_projects"
+      "mcp__plugin_vercel_vercel__list_projects",
+      "Bash(rm vercel.ts)",
+      "Bash(npm uninstall:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
