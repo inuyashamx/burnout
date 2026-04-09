@@ -5,6 +5,12 @@ export default function Step3Path() {
 
   return (
     <div className="flex-1 flex flex-col animate-fade-in-up">
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-4 self-start">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        Volver
+      </button>
       <h1 className="font-display text-3xl sm:text-4xl tracking-tight text-white mb-1">
         TU CAMINO
       </h1>
