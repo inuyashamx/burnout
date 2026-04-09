@@ -5,7 +5,12 @@ import { supabase } from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import CreatePost from '../../components/CreatePost'
 import PostCard from '../../components/PostCard'
-import type { Post } from '../../lib/types'
+import type { Post, ClubMemberWithProfile, EventRow } from '../../lib/types'
+
+type FeedItem =
+  | { kind: 'post'; data: Post; date: string }
+  | { kind: 'member_joined'; data: ClubMemberWithProfile; date: string }
+  | { kind: 'event_created'; data: EventRow; date: string }
 
 export default function Inicio() {
   const { session, membership } = useAuth()
@@ -31,6 +36,13 @@ export default function Inicio() {
 
   const now = new Date().toISOString()
   const nextEvent = events.find((e) => e.date_time >= now)
+
+  // Build unified feed
+  const feedItems: FeedItem[] = [
+    ...posts.map((p): FeedItem => ({ kind: 'post', data: p, date: p.created_at })),
+    ...members.map((m): FeedItem => ({ kind: 'member_joined', data: m, date: m.joined_at })),
+    ...events.map((e): FeedItem => ({ kind: 'event_created', data: e, date: e.created_at })),
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   if (loading) {
     return <div className="p-5 text-center text-white/30 text-sm pt-20">Cargando...</div>
@@ -101,18 +113,59 @@ export default function Inicio() {
       {/* Create post */}
       <CreatePost clubId={club.id} onCreated={loadPosts} />
 
-      {/* Posts feed */}
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
+      {/* Unified feed */}
+      {feedItems.map((item) => {
+        if (item.kind === 'post') {
+          return <PostCard key={`post-${item.data.id}`} post={item.data} />
+        }
+        if (item.kind === 'member_joined') {
+          return (
+            <ActivityCard key={`member-${item.data.id}`} date={item.date}>
+              <span className="text-[var(--cyan)]">@{item.data.profiles.nickname}</span> se unió al club
+            </ActivityCard>
+          )
+        }
+        if (item.kind === 'event_created') {
+          return (
+            <ActivityCard key={`event-${item.data.id}`} date={item.date}>
+              Nuevo evento: <span className="text-white font-medium">{item.data.title}</span>
+            </ActivityCard>
+          )
+        }
+        return null
+      })}
 
-      {posts.length === 0 && (
+      {feedItems.length === 0 && (
         <p className="text-center text-white/20 text-sm py-4">
           Sé el primero en publicar algo
         </p>
       )}
     </div>
   )
+}
+
+function ActivityCard({ children, date }: { children: React.ReactNode; date: string }) {
+  const timeAgo = getTimeAgo(date)
+  return (
+    <div className="flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white/[0.015] border border-white/[0.04]">
+      <div className="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-xs flex-shrink-0">
+        📋
+      </div>
+      <div className="flex-1 text-sm text-white/50">{children}</div>
+      <span className="text-[10px] text-white/20 flex-shrink-0">{timeAgo}</span>
+    </div>
+  )
+}
+
+function getTimeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'ahora'
+  if (mins < 60) return `${mins}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  const days = Math.floor(hours / 24)
+  return `${days}d`
 }
 
 function NextEventCard({ event, userId }: { event: { id: string; title: string; date_time: string; location: string | null; event_type: string | null }; userId?: string }) {
