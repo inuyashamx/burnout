@@ -80,6 +80,18 @@ export default function MiClub() {
           onClick={() => navigate('/app/club/members')}
         />
 
+        <MenuButton
+          icon="🎂"
+          label="Cumpleaños"
+          onClick={() => navigate('/app/club/birthdays')}
+        />
+
+        <MenuButton
+          icon="🛍️"
+          label="Merch"
+          onClick={() => navigate('/app/club/merch')}
+        />
+
         {canManage && (
           <MenuButton
             icon="📅"
@@ -123,7 +135,7 @@ export default function MiClub() {
           {events.filter((e) => e.date_time >= now.toISOString()).slice(0, 5).map((e) => {
             const dt = new Date(e.date_time)
             return (
-              <div key={e.id} className="py-2.5 border-b border-white/[0.04] flex items-center gap-3">
+              <div key={e.id} onClick={() => navigate(`/app/club/events/${e.id}`)} className="py-2.5 border-b border-white/[0.04] flex items-center gap-3 cursor-pointer hover:bg-white/[0.02] -mx-2 px-2 rounded-lg transition-colors">
                 <div className="text-center flex-shrink-0 w-10">
                   <div className="text-xs font-bold text-[var(--cyan)]">{dt.getDate()}</div>
                   <div className="text-[9px] text-white/30 uppercase">

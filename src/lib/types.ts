@@ -89,6 +89,31 @@ export interface PostComment {
   profiles?: Profile
 }
 
+export interface MerchItem {
+  id: string
+  club_id: string
+  name: string
+  description: string | null
+  price: number
+  photo_url: string | null
+  active: boolean
+  created_by: string
+  created_at: string
+}
+
+export interface MerchRequest {
+  id: string
+  item_id: string
+  user_id: string
+  size: string | null
+  notes: string | null
+  quantity: number
+  status: 'pending' | 'approved' | 'delivered' | 'cancelled'
+  created_at: string
+  profiles?: Profile
+  merch_items?: MerchItem
+}
+
 export interface Notification {
   id: string
   user_id: string

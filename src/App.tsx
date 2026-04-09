@@ -27,6 +27,12 @@ import ClubSettings from './pages/app/ClubSettings'
 import Perfil from './pages/app/Perfil'
 import AddCar from './pages/app/AddCar'
 import Notifications from './pages/app/Notifications'
+import EditEvent from './pages/app/EditEvent'
+import EventDetail from './pages/app/EventDetail'
+import Birthdays from './pages/app/Birthdays'
+import MerchStore from './pages/app/MerchStore'
+import AddMerchItem from './pages/app/AddMerchItem'
+import MerchRequests from './pages/app/MerchRequests'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, profile, loading } = useAuth()
@@ -71,6 +77,12 @@ export default function App() {
             <Route path="club/members" element={<MemberList />} />
             <Route path="club/create-event" element={<CreateEvent />} />
             <Route path="club/settings" element={<ClubSettings />} />
+            <Route path="club/events/:eventId" element={<EventDetail />} />
+            <Route path="club/events/:eventId/edit" element={<EditEvent />} />
+            <Route path="club/birthdays" element={<Birthdays />} />
+            <Route path="club/merch" element={<MerchStore />} />
+            <Route path="club/merch/add" element={<AddMerchItem />} />
+            <Route path="club/merch/requests" element={<MerchRequests />} />
             <Route path="perfil" element={<Perfil />} />
             <Route path="perfil/add-car" element={<AddCar />} />
             <Route path="perfil/notifications" element={<Notifications />} />
