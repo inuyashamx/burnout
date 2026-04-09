@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth'
+import { notifyMemberJoined } from '../../lib/notifications'
 import type { Club } from '../../lib/types'
 
 export default function JoinClub() {
@@ -36,6 +37,9 @@ export default function JoinClub() {
       user_id: session.user.id,
       role: 'member',
     })
+
+    const nickname = session.user.user_metadata?.full_name ?? 'Nuevo miembro'
+    notifyMemberJoined(clubId, nickname)
 
     await refreshMembership()
     navigate('/app')

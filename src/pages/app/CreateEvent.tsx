@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth'
+import { notifyNewEvent } from '../../lib/notifications'
 
 export default function CreateEvent() {
   const { session, membership } = useAuth()
@@ -21,18 +22,21 @@ export default function CreateEvent() {
     setSaving(true)
     setError('')
 
-    const { error: err } = await supabase.from('events').insert({
+    const isoDate = new Date(dateTime).toISOString()
+    const { data: event, error: err } = await supabase.from('events').insert({
       club_id: membership.club_id,
       title: title.trim(),
       description: description.trim() || null,
-      date_time: new Date(dateTime).toISOString(),
+      date_time: isoDate,
       location: location.trim() || null,
       event_type: null,
       created_by: session.user.id,
-    })
+    }).select().single()
 
     setSaving(false)
-    if (err) return setError('Error al crear evento. Intenta de nuevo.')
+    if (err || !event) return setError('Error al crear evento. Intenta de nuevo.')
+
+    notifyNewEvent(membership.club_id, title.trim(), event.id, isoDate)
     navigate('/app/club')
   }
 

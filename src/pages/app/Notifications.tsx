@@ -1,17 +1,42 @@
 import { useNavigate } from 'react-router-dom'
 import { useNotifications } from '../../lib/hooks'
+import type { Notification } from '../../lib/types'
 
 const TYPE_ICONS: Record<string, string> = {
   new_event: '📅',
   event_reminder: '⏰',
   member_joined: '👋',
   birthday: '🎂',
+  merch_request: '🛍️',
   default: '🔔',
+}
+
+function getNotificationRoute(n: Notification): string | null {
+  const data = n.data as Record<string, string>
+  switch (n.type) {
+    case 'new_event':
+    case 'event_reminder':
+      return data.event_id ? `/app/club/events/${data.event_id}` : '/app/calendario'
+    case 'member_joined':
+      return '/app/club/members'
+    case 'birthday':
+      return '/app/club/birthdays'
+    case 'merch_request':
+      return '/app/club/merch/requests'
+    default:
+      return null
+  }
 }
 
 export default function Notifications() {
   const { notifications, markAsRead, markAllRead } = useNotifications()
   const navigate = useNavigate()
+
+  const handleTap = async (n: Notification) => {
+    await markAsRead(n.id)
+    const route = getNotificationRoute(n)
+    if (route) navigate(route)
+  }
 
   return (
     <div className="p-5">
@@ -43,11 +68,12 @@ export default function Notifications() {
           {notifications.map((n) => {
             const icon = TYPE_ICONS[n.type] ?? TYPE_ICONS.default
             const timeAgo = getTimeAgo(n.created_at)
+            const hasRoute = !!getNotificationRoute(n)
 
             return (
               <button
                 key={n.id}
-                onClick={() => markAsRead(n.id)}
+                onClick={() => handleTap(n)}
                 className={`w-full text-left flex items-start gap-3 p-3 rounded-xl transition-colors ${
                   n.read ? 'bg-transparent' : 'bg-[var(--cyan)]/[0.03]'
                 } hover:bg-white/[0.03]`}
@@ -62,9 +88,14 @@ export default function Notifications() {
                   )}
                   <div className="text-[10px] text-white/20 mt-1">{timeAgo}</div>
                 </div>
-                {!n.read && (
-                  <div className="w-2 h-2 rounded-full bg-[var(--cyan)] flex-shrink-0 mt-2" />
-                )}
+                <div className="flex items-center gap-1.5 flex-shrink-0 mt-1.5">
+                  {!n.read && (
+                    <div className="w-2 h-2 rounded-full bg-[var(--cyan)]" />
+                  )}
+                  {hasRoute && (
+                    <span className="text-white/15 text-xs">→</span>
+                  )}
+                </div>
               </button>
             )
           })}
