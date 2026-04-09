@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
@@ -44,9 +44,10 @@ const tabs = [
 
 export default function BottomTabs() {
   const { session } = useAuth()
+  const location = useLocation()
   const [unreadCount, setUnreadCount] = useState(0)
 
-  useEffect(() => {
+  const refreshCount = () => {
     if (!session?.user.id) return
     supabase
       .from('notifications')
@@ -54,7 +55,10 @@ export default function BottomTabs() {
       .eq('user_id', session.user.id)
       .eq('read', false)
       .then(({ count }) => setUnreadCount(count ?? 0))
-  }, [session?.user.id])
+  }
+
+  // Refresh on mount and on every navigation
+  useEffect(() => { refreshCount() }, [session?.user.id, location.pathname])
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-[#0a0a0a]/95 backdrop-blur-lg safe-area-bottom">

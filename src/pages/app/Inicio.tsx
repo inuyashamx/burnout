@@ -168,7 +168,7 @@ function getTimeAgo(dateStr: string): string {
   return `${days}d`
 }
 
-function NextEventCard({ event, userId }: { event: { id: string; title: string; date_time: string; location: string | null; event_type: string | null }; userId?: string }) {
+function NextEventCard({ event, userId }: { event: { id: string; title: string; date_time: string; location: string | null; event_type: string | null; banner_url?: string | null }; userId?: string }) {
   const { rsvps, refresh } = useEventRsvps(event.id)
   const myRsvp = rsvps.find((r) => r.user_id === userId)
   const goingCount = rsvps.filter((r) => r.status === 'going').length
@@ -192,7 +192,11 @@ function NextEventCard({ event, userId }: { event: { id: string; title: string; 
   const timeStr = dt.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className="p-4 rounded-xl bg-[var(--cyan)]/[0.04] border border-[var(--cyan)]/15">
+    <div className="rounded-xl bg-[var(--cyan)]/[0.04] border border-[var(--cyan)]/15 overflow-hidden">
+      {event.banner_url && (
+        <img src={event.banner_url} alt="" className="w-full h-32 object-cover" />
+      )}
+      <div className="p-4">
       <div className="text-[10px] tracking-widest uppercase text-[var(--cyan)] mb-1.5">Próximo evento</div>
       <div className="font-semibold text-white mb-1">{event.title}</div>
       <div className="text-xs text-white/40 mb-3">
@@ -235,6 +239,7 @@ function NextEventCard({ event, userId }: { event: { id: string; title: string; 
         >
           No voy
         </button>
+      </div>
       </div>
     </div>
   )

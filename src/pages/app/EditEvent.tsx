@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth'
 import ConfirmModal from '../../components/ConfirmModal'
 
 export default function EditEvent() {
   const { eventId } = useParams()
+  const { session } = useAuth()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [dateTime, setDateTime] = useState('')
   const [location, setLocation] = useState('')
+  const [bannerUrl, setBannerUrl] = useState('')
+  const [bannerFile, setBannerFile] = useState<File | null>(null)
+  const [bannerPreview, setBannerPreview] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -28,6 +33,8 @@ export default function EditEvent() {
           setDescription(data.description ?? '')
           setDateTime(data.date_time.slice(0, 16))
           setLocation(data.location ?? '')
+          setBannerUrl(data.banner_url ?? '')
+          setBannerPreview(data.banner_url ?? '')
         }
         setLoading(false)
       })
@@ -40,11 +47,23 @@ export default function EditEvent() {
     setSaving(true)
     setError('')
 
+    let finalBannerUrl: string | null = bannerUrl || null
+    if (bannerFile && session?.user.id) {
+      const ext = bannerFile.name.split('.').pop()
+      const path = `${session.user.id}/events/${Date.now()}.${ext}`
+      const { error: uploadErr } = await supabase.storage.from('media').upload(path, bannerFile)
+      if (!uploadErr) {
+        const { data } = supabase.storage.from('media').getPublicUrl(path)
+        finalBannerUrl = data.publicUrl
+      }
+    }
+
     const { error: err } = await supabase.from('events').update({
       title: title.trim(),
       description: description.trim() || null,
       date_time: new Date(dateTime).toISOString(),
       location: location.trim() || null,
+      banner_url: finalBannerUrl,
     }).eq('id', eventId)
 
     setSaving(false)
@@ -79,6 +98,27 @@ export default function EditEvent() {
       </button>
 
       <h1 className="font-display text-3xl tracking-tight text-white mb-6">EDITAR EVENTO</h1>
+
+      {/* Banner */}
+      <div className="mb-4">
+        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Banner</span>
+        <label className="block cursor-pointer">
+          <div className="w-full h-36 rounded-xl border-2 border-dashed border-[var(--cyan)]/30 bg-white/[0.02] flex items-center justify-center overflow-hidden hover:border-[var(--cyan)]/50 transition-colors">
+            {bannerPreview ? (
+              <img src={bannerPreview} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center text-white/30">
+                <div className="text-2xl mb-1">🖼️</div>
+                <div className="text-xs">Agregar banner</div>
+              </div>
+            )}
+          </div>
+          <input type="file" accept="image/*" onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) { setBannerFile(file); setBannerPreview(URL.createObjectURL(file)) }
+          }} className="hidden" />
+        </label>
+      </div>
 
       <label className="block mb-3">
         <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Título *</span>

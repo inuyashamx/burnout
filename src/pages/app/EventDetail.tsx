@@ -73,6 +73,10 @@ export default function EventDetail() {
         )}
       </div>
 
+      {event.banner_url && (
+        <img src={event.banner_url} alt="" className="w-full h-40 object-cover rounded-xl mb-4" />
+      )}
+
       <h1 className="font-display text-3xl tracking-tight text-white mb-2">{event.title}</h1>
       <div className="text-sm text-white/40 mb-1 capitalize">{dateStr}</div>
       <div className="text-sm text-white/40 mb-4">{timeStr}{event.location && ` · ${event.location}`}</div>
