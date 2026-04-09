@@ -48,6 +48,7 @@ export interface EventRow {
   date_time: string
   location: string | null
   event_type: string | null
+  banner_url: string | null
   created_by: string
   created_at: string
 }

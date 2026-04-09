@@ -57,8 +57,14 @@ export default function BottomTabs() {
       .then(({ count }) => setUnreadCount(count ?? 0))
   }
 
-  // Refresh on mount and on every navigation
+  // Refresh on mount, navigation, and when notifications are read
   useEffect(() => { refreshCount() }, [session?.user.id, location.pathname])
+
+  useEffect(() => {
+    const handler = () => refreshCount()
+    window.addEventListener('notifications-updated', handler)
+    return () => window.removeEventListener('notifications-updated', handler)
+  }, [session?.user.id])
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-[#0a0a0a]/95 backdrop-blur-lg safe-area-bottom">

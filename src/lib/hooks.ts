@@ -149,12 +149,14 @@ export function useNotifications() {
   const markAsRead = async (id: string) => {
     await supabase.from('notifications').update({ read: true }).eq('id', id)
     refresh()
+    window.dispatchEvent(new Event('notifications-updated'))
   }
 
   const markAllRead = async () => {
     if (!session?.user.id) return
     await supabase.from('notifications').update({ read: true }).eq('user_id', session.user.id).eq('read', false)
     refresh()
+    window.dispatchEvent(new Event('notifications-updated'))
   }
 
   return { notifications, unreadCount, refresh, markAsRead, markAllRead }
