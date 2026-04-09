@@ -22,9 +22,8 @@ export default function PostCard({ post, onDeleted }: { post: Post; onDeleted?: 
   const [commenting, setCommenting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  const isMyPost = userId === post.user_id
-
   const userId = session?.user.id
+  const isMyPost = userId === post.user_id
 
   useEffect(() => {
     supabase

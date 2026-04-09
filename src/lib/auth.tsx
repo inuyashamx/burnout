@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // onAuthStateChange fires INITIAL_SESSION on mount — handles initial load
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, s) => {
+      (_event, s) => {
         setSession(s)
 
         if (s?.user.id) {
