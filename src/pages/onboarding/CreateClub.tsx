@@ -29,42 +29,52 @@ export default function CreateClub() {
     setSaving(true)
     setError('')
 
-    let logoUrl: string | null = null
-    if (logoFile) {
-      const ext = logoFile.name.split('.').pop()
-      const path = `${session.user.id}/clubs/${Date.now()}.${ext}`
-      const { error: uploadErr } = await supabase.storage.from('media').upload(path, logoFile)
-      if (!uploadErr) {
-        const { data } = supabase.storage.from('media').getPublicUrl(path)
-        logoUrl = data.publicUrl
+    try {
+      let logoUrl: string | null = null
+      if (logoFile) {
+        const ext = logoFile.name.split('.').pop()
+        const path = `${session.user.id}/clubs/${Date.now()}.${ext}`
+        const { error: uploadErr } = await supabase.storage.from('media').upload(path, logoFile)
+        if (!uploadErr) {
+          const { data } = supabase.storage.from('media').getPublicUrl(path)
+          logoUrl = data.publicUrl
+        }
       }
-    }
 
-    const { data: club, error: clubErr } = await supabase
-      .from('clubs')
-      .insert({
-        name: name.trim(),
-        description: description.trim() || null,
-        logo_url: logoUrl,
-        whatsapp_link: whatsappLink.trim() || null,
-        created_by: session.user.id,
+      const { data: club, error: clubErr } = await supabase
+        .from('clubs')
+        .insert({
+          name: name.trim(),
+          description: description.trim() || null,
+          logo_url: logoUrl,
+          whatsapp_link: whatsappLink.trim() || null,
+          created_by: session.user.id,
+        })
+        .select()
+        .single()
+
+      if (clubErr || !club) {
+        setSaving(false)
+        return setError(clubErr?.message ?? 'Error al crear el club. Intenta de nuevo.')
+      }
+
+      const { error: memberErr } = await supabase.from('club_members').insert({
+        club_id: club.id,
+        user_id: session.user.id,
+        role: 'leader',
       })
-      .select()
-      .single()
 
-    if (clubErr || !club) {
+      if (memberErr) {
+        setSaving(false)
+        return setError(memberErr.message)
+      }
+
+      await refreshMembership()
+      navigate('/app')
+    } catch (e) {
       setSaving(false)
-      return setError('Error al crear el club. Intenta de nuevo.')
+      setError('Error inesperado. Intenta de nuevo.')
     }
-
-    await supabase.from('club_members').insert({
-      club_id: club.id,
-      user_id: session.user.id,
-      role: 'leader',
-    })
-
-    await refreshMembership()
-    navigate('/app')
   }
 
   return (
@@ -118,7 +128,7 @@ export default function CreateClub() {
       <label className="block mb-5">
         <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Link de WhatsApp</span>
         <input
-          type="url"
+          type="text"
           value={whatsappLink}
           onChange={(e) => setWhatsappLink(e.target.value)}
           placeholder="https://chat.whatsapp.com/..."

@@ -70,7 +70,7 @@ export default function ClubSettings() {
       <label className="block mb-6">
         <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Link de WhatsApp</span>
         <input
-          type="url"
+          type="text"
           value={whatsappLink}
           onChange={(e) => setWhatsappLink(e.target.value)}
           placeholder="https://chat.whatsapp.com/..."
