@@ -7,7 +7,8 @@ export default function Step1Profile() {
   const { session, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [nickname, setNickname] = useState('')
-  const [birthday, setBirthday] = useState('')
+  const [birthDay, setBirthDay] = useState('')
+  const [birthMonth, setBirthMonth] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -15,11 +16,14 @@ export default function Step1Profile() {
 
   const handleNext = async () => {
     if (!nickname.trim()) return setError('El nickname es obligatorio')
-    if (!birthday) return setError('La fecha de nacimiento es obligatoria')
+    if (!birthMonth || !birthDay) return setError('Selecciona tu día y mes de cumpleaños')
     if (!session?.user.id) return
 
     setSaving(true)
     setError('')
+
+    // Store as a fixed date with year 2000 (only month/day matter)
+    const birthday = `2000-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`
 
     const { error: err } = await supabase.from('profiles').insert({
       id: session.user.id,
@@ -74,15 +78,31 @@ export default function Step1Profile() {
       </label>
 
       {/* Birthday */}
-      <label className="block mb-6">
+      <div className="mb-6">
         <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">¿Cuándo es tu cumpleaños? *</span>
-        <input
-          type="date"
-          value={birthday}
-          onChange={(e) => setBirthday(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors [color-scheme:dark]"
-        />
-      </label>
+        <div className="flex gap-3">
+          <select
+            value={birthDay}
+            onChange={(e) => setBirthDay(e.target.value)}
+            className="flex-1 px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors appearance-none [color-scheme:dark]"
+          >
+            <option value="" disabled className="bg-[#111] text-white/40">Día</option>
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+              <option key={d} value={String(d)} className="bg-[#111]">{d}</option>
+            ))}
+          </select>
+          <select
+            value={birthMonth}
+            onChange={(e) => setBirthMonth(e.target.value)}
+            className="flex-[2] px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors appearance-none [color-scheme:dark]"
+          >
+            <option value="" disabled className="bg-[#111] text-white/40">Mes</option>
+            {['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map((m, i) => (
+              <option key={i} value={String(i + 1)} className="bg-[#111]">{m}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {error && (
         <p className="text-red-400 text-sm mb-4">{error}</p>
