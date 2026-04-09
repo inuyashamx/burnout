@@ -55,35 +55,50 @@ export default function UserProfile() {
       </div>
 
       {/* Garage */}
-      {cars.length > 0 && (
-        <div>
-          <div className="text-[10px] tracking-widest uppercase text-white/25 mb-3">Garage</div>
-          <div className="space-y-2">
-            {cars.map((car) => (
-              <div key={car.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--cyan)]/[0.06] flex-shrink-0 flex items-center justify-center">
-                  {car.photos.length > 0 ? (
-                    <img src={car.photos[0]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-xl">🚗</span>
-                  )}
+      <div className="text-[10px] tracking-widest uppercase text-white/25 mb-4">
+        Garage {cars.length > 0 && `(${cars.length})`}
+      </div>
+
+      {cars.length === 0 ? (
+        <p className="text-center text-white/20 text-sm py-8">Sin carros registrados</p>
+      ) : (
+        <div className="space-y-6">
+          {cars.map((car) => (
+            <div key={car.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              {/* Car photos */}
+              {car.photos.length > 0 && (
+                <div className={`grid gap-0.5 ${
+                  car.photos.length === 1 ? 'grid-cols-1' :
+                  car.photos.length === 2 ? 'grid-cols-2' :
+                  'grid-cols-2'
+                }`}>
+                  {car.photos.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url}
+                      alt=""
+                      className={`w-full object-cover ${
+                        car.photos.length === 1 ? 'h-48' :
+                        car.photos.length === 3 && i === 0 ? 'h-48 col-span-2' :
+                        'h-36'
+                      }`}
+                    />
+                  ))}
                 </div>
-                <div>
-                  {car.nickname && (
-                    <div className="font-semibold text-sm text-white">"{car.nickname}"</div>
-                  )}
-                  <div className="text-xs text-white/40">
-                    {car.make} {car.model} · {car.year}
-                  </div>
+              )}
+
+              {/* Car info */}
+              <div className="p-3.5">
+                {car.nickname && (
+                  <div className="font-display text-lg text-[var(--cyan)] mb-0.5">"{car.nickname}"</div>
+                )}
+                <div className="text-sm text-white/60">
+                  {car.make} {car.model} · {car.year}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      )}
-
-      {cars.length === 0 && (
-        <p className="text-center text-white/20 text-sm py-4">Sin carros registrados</p>
       )}
     </div>
   )

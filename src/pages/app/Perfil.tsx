@@ -45,36 +45,51 @@ export default function Perfil() {
 
       {/* Garage */}
       <div className="mb-6">
-        <div className="text-[10px] tracking-widest uppercase text-white/25 mb-3">Mi Garage</div>
+        <div className="text-[10px] tracking-widest uppercase text-white/25 mb-4">
+          Mi Garage {cars.length > 0 && `(${cars.length})`}
+        </div>
 
         {cars.length === 0 ? (
           <div className="text-center py-6 text-white/30 text-sm">
             No tienes carros registrados
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-5">
             {cars.map((car) => (
               <div
                 key={car.id}
                 onClick={() => navigate(`/app/perfil/cars/${car.id}/edit`)}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors"
+                className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden cursor-pointer hover:bg-white/[0.03] transition-colors"
               >
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--cyan)]/[0.06] flex-shrink-0 flex items-center justify-center">
-                  {car.photos.length > 0 ? (
-                    <img src={car.photos[0]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-xl">🚗</span>
-                  )}
-                </div>
-                <div className="flex-1">
-                  {car.nickname && (
-                    <div className="font-semibold text-sm text-white">"{car.nickname}"</div>
-                  )}
-                  <div className="text-xs text-white/40">
-                    {car.make} {car.model} · {car.year}
+                {car.photos.length > 0 && (
+                  <div className={`grid gap-0.5 ${
+                    car.photos.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+                  }`}>
+                    {car.photos.map((url, i) => (
+                      <img
+                        key={i}
+                        src={url}
+                        alt=""
+                        className={`w-full object-cover ${
+                          car.photos.length === 1 ? 'h-48' :
+                          car.photos.length === 3 && i === 0 ? 'h-48 col-span-2' :
+                          'h-36'
+                        }`}
+                      />
+                    ))}
                   </div>
+                )}
+                <div className="p-3.5 flex items-center justify-between">
+                  <div>
+                    {car.nickname && (
+                      <div className="font-display text-lg text-[var(--cyan)]">"{car.nickname}"</div>
+                    )}
+                    <div className="text-sm text-white/60">
+                      {car.make} {car.model} · {car.year}
+                    </div>
+                  </div>
+                  <span className="text-white/15 text-xs">editar →</span>
                 </div>
-                <span className="text-white/15 text-xs">→</span>
               </div>
             ))}
           </div>
@@ -82,7 +97,7 @@ export default function Perfil() {
 
         <button
           onClick={() => navigate('/app/perfil/add-car')}
-          className="w-full mt-3 p-3 rounded-xl border border-dashed border-white/10 text-center text-sm text-white/25 hover:text-white/40 hover:border-white/20 transition-colors"
+          className="w-full mt-4 p-3 rounded-xl border border-dashed border-white/10 text-center text-sm text-white/25 hover:text-white/40 hover:border-white/20 transition-colors"
         >
           + Agregar otro carro
         </button>
