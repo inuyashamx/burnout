@@ -3,28 +3,33 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
-console.log('[BURNOUT AUTH] supabaseUrl:', supabaseUrl)
-console.log('[BURNOUT AUTH] anonKey length:', supabaseAnonKey?.length)
-console.log('[BURNOUT AUTH] current URL:', window.location.href)
-console.log('[BURNOUT AUTH] hash:', window.location.hash ? 'HAS HASH (' + window.location.hash.length + ' chars)' : 'NO HASH')
-console.log('[BURNOUT AUTH] search:', window.location.search || 'NONE')
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: window.localStorage,
     storageKey: 'supabase.auth.token',
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
+    detectSessionInUrl: false,
   },
 })
 
-// Log auth state changes
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('[BURNOUT AUTH] onAuthStateChange:', event, session ? `user=${session.user.id}` : 'no session')
-})
+// Manually handle OAuth hash tokens — detectSessionInUrl breaks with "Invalid value" on Vercel
+if (typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+  const hash = window.location.hash.substring(1)
+  const params = new URLSearchParams(hash)
+  const accessToken = params.get('access_token')
+  const refreshToken = params.get('refresh_token')
 
-// Log if there's an existing session
-supabase.auth.getSession().then(({ data, error }) => {
-  console.log('[BURNOUT AUTH] getSession:', data.session ? `user=${data.session.user.id}` : 'no session', error ? `error=${error.message}` : '')
-})
+  console.log('[BURNOUT AUTH] Manual hash parse — access_token length:', accessToken?.length, 'refresh_token:', refreshToken)
+
+  if (accessToken && refreshToken) {
+    supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    }).then(({ data, error }) => {
+      console.log('[BURNOUT AUTH] setSession result:', data.session ? 'SUCCESS' : 'NO SESSION', error ? `error=${error.message}` : '')
+      // Clean hash from URL
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    })
+  }
+}
