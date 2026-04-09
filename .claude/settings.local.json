@@ -20,7 +20,12 @@
       "Bash(~/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)",
       "mcp__plugin_playwright_playwright__browser_close",
       "mcp__supabase__apply_migration",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "WebSearch",
+      "Bash(curl -sI \"https://burnout-inuyashamxs-projects.vercel.app/login\")",
+      "Read(//c/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/**)",
+      "Bash(ls \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)",
+      "Bash(cat \"C:/Users/jpnc_/OneDrive/Escritorio/Projects/lagranjavota/vite.config\"*)"
     ]
   },
   "enableAllProjectMcpServers": true,
