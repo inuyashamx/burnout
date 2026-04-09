@@ -6,7 +6,8 @@ import { useAuth } from '../../lib/auth'
 export default function Step1Profile() {
   const { session, refreshProfile } = useAuth()
   const navigate = useNavigate()
-  const [nickname, setNickname] = useState('')
+  const googleName = session?.user.user_metadata?.full_name ?? session?.user.user_metadata?.name ?? ''
+  const [nickname, setNickname] = useState(googleName)
   const [birthDay, setBirthDay] = useState('')
   const [birthMonth, setBirthMonth] = useState('')
   const [saving, setSaving] = useState(false)
