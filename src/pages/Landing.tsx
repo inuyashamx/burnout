@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import InstallPWA from '../components/InstallPWA'
 
 function SpeedLines() {
@@ -65,6 +67,40 @@ function CarSilhouette() {
 }
 
 export default function Landing() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // After Google OAuth, tokens arrive in hash on this page
+    // Supabase auto-detects them, then we redirect
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user?.id) {
+          subscription.unsubscribe()
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', session.user.id)
+            .maybeSingle()
+          navigate(profile ? '/app' : '/onboarding', { replace: true })
+        }
+      }
+    )
+
+    // Also check if already logged in
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', session.user.id)
+          .maybeSingle()
+        navigate(profile ? '/app' : '/onboarding', { replace: true })
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [navigate])
+
   return (
     <div className="relative min-h-[100dvh] flex flex-col noise-overlay">
       <SpeedLines />
