@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
 import { useClub, useClubMembers } from '../../lib/hooks'
 import { supabase } from '../../lib/supabase'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const ROLE_LABELS: Record<string, string> = {
   leader: 'Líder',
@@ -22,9 +24,22 @@ export default function MemberList() {
   const navigate = useNavigate()
   const isLeader = membership?.role === 'leader'
 
-  const handleRemove = async (memberId: string) => {
-    await supabase.from('club_members').delete().eq('id', memberId)
-    refresh()
+  const [confirmAction, setConfirmAction] = useState<{
+    title: string; message: string; confirmLabel: string; danger?: boolean; onConfirm: () => void
+  } | null>(null)
+
+  const handleRemove = (memberId: string, nickname: string) => {
+    setConfirmAction({
+      title: 'Sacar miembro',
+      message: `¿Sacar a @${nickname} del club?`,
+      confirmLabel: 'Sacar',
+      danger: true,
+      onConfirm: async () => {
+        await supabase.from('club_members').delete().eq('id', memberId)
+        setConfirmAction(null)
+        refresh()
+      },
+    })
   }
 
   const handlePromote = async (memberId: string, newRole: 'admin' | 'member') => {
@@ -32,18 +47,34 @@ export default function MemberList() {
     refresh()
   }
 
-  const handleTransferLeader = async (memberId: string) => {
-    if (!confirm('¿Transferir el liderazgo? Tú pasarás a ser Admin.')) return
-    if (!membership?.id) return
-    // Make the target the new leader
-    await supabase.from('club_members').update({ role: 'leader' }).eq('id', memberId)
-    // Demote current leader to admin
-    await supabase.from('club_members').update({ role: 'admin' }).eq('id', membership.id)
-    refresh()
+  const handleTransferLeader = (memberId: string, nickname: string) => {
+    setConfirmAction({
+      title: 'Transferir liderazgo',
+      message: `¿Hacer a @${nickname} el nuevo líder? Tú pasarás a ser Admin.`,
+      confirmLabel: 'Transferir',
+      onConfirm: async () => {
+        if (!membership?.id) return
+        await supabase.from('club_members').update({ role: 'leader' }).eq('id', memberId)
+        await supabase.from('club_members').update({ role: 'admin' }).eq('id', membership.id)
+        setConfirmAction(null)
+        refresh()
+      },
+    })
   }
 
   return (
     <div className="p-5">
+      {confirmAction && (
+        <ConfirmModal
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmLabel={confirmAction.confirmLabel}
+          danger={confirmAction.danger}
+          onConfirm={confirmAction.onConfirm}
+          onCancel={() => setConfirmAction(null)}
+        />
+      )}
+
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-6">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -91,13 +122,13 @@ export default function MemberList() {
                   </button>
                 )}
                 <button
-                  onClick={() => handleTransferLeader(m.id)}
+                  onClick={() => handleTransferLeader(m.id, m.profiles.nickname)}
                   className="px-2 py-1 rounded text-[10px] bg-[var(--cyan)]/10 text-[var(--cyan)] hover:bg-[var(--cyan)]/20 transition-colors"
                 >
                   Dar líder
                 </button>
                 <button
-                  onClick={() => handleRemove(m.id)}
+                  onClick={() => handleRemove(m.id, m.profiles.nickname)}
                   className="px-2 py-1 rounded text-[10px] bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
                 >
                   Sacar

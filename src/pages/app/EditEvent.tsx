@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function EditEvent() {
   const { eventId } = useParams()
@@ -12,6 +13,7 @@ export default function EditEvent() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     if (!eventId) return
@@ -51,7 +53,6 @@ export default function EditEvent() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('¿Eliminar este evento?')) return
     await supabase.from('events').delete().eq('id', eventId)
     navigate('/app/club')
   }
@@ -60,6 +61,16 @@ export default function EditEvent() {
 
   return (
     <div className="p-5 animate-fade-in-up">
+      {showDeleteConfirm && (
+        <ConfirmModal
+          title="Eliminar evento"
+          message="¿Estás seguro de eliminar este evento? No se puede deshacer."
+          confirmLabel="Eliminar"
+          danger
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-6">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -99,7 +110,7 @@ export default function EditEvent() {
         {saving ? 'Guardando...' : 'Guardar Cambios'}
       </button>
 
-      <button onClick={handleDelete} className="w-full p-3 rounded-xl text-red-400 text-sm hover:bg-red-500/10 transition-colors">
+      <button onClick={() => setShowDeleteConfirm(true)} className="w-full p-3 rounded-xl text-red-400 text-sm hover:bg-red-500/10 transition-colors">
         Eliminar evento
       </button>
     </div>
