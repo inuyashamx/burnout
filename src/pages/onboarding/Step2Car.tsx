@@ -16,9 +16,16 @@ export default function Step2Car() {
   const [error, setError] = useState('')
 
   const handlePhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []).slice(0, 5)
-    setPhotos(files)
-    setPreviews(files.map((f) => URL.createObjectURL(f)))
+    const newFiles = Array.from(e.target.files ?? [])
+    const combined = [...photos, ...newFiles].slice(0, 5)
+    setPhotos(combined)
+    setPreviews(combined.map((f) => URL.createObjectURL(f)))
+    e.target.value = ''
+  }
+
+  const removePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index))
+    setPreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
   const uploadPhotos = async (): Promise<string[]> => {
@@ -75,28 +82,34 @@ export default function Step2Car() {
       {/* Photo upload */}
       <div className="mb-5">
         <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Fotos (hasta 5)</span>
-        <label className="flex flex-wrap gap-2 cursor-pointer">
+        <div className="flex flex-wrap gap-2">
           {previews.map((src, i) => (
-            <div key={i} className="w-16 h-16 rounded-lg overflow-hidden border border-white/10">
+            <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/10">
               <img src={src} alt="" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => removePhoto(i)}
+                className="absolute top-0 right-0 w-5 h-5 bg-black/70 rounded-bl flex items-center justify-center text-white/70 text-xs hover:text-red-400"
+              >
+                ×
+              </button>
             </div>
           ))}
-          {previews.length < 5 && (
-            <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[var(--cyan)]/30 flex items-center justify-center text-[var(--cyan)]/60 hover:border-[var(--cyan)]/50 transition-colors">
+          {photos.length < 5 && (
+            <label className="w-16 h-16 rounded-lg border-2 border-dashed border-[var(--cyan)]/30 flex items-center justify-center text-[var(--cyan)]/60 hover:border-[var(--cyan)]/50 transition-colors cursor-pointer">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-            </div>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotos}
+                className="hidden"
+              />
+            </label>
           )}
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handlePhotos}
-            className="hidden"
-          />
-        </label>
+        </div>
       </div>
 
       {/* Car nickname */}
