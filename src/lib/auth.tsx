@@ -21,23 +21,23 @@ const AuthContext = createContext<AuthState>({
   refreshMembership: async () => {},
 })
 
-async function fetchProfile(userId: string) {
+async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .maybeSingle()
-  return data as Profile | null
+  return data
 }
 
-async function fetchMembership(userId: string) {
+async function fetchMembership(userId: string): Promise<ClubMember | null> {
   const { data } = await supabase
     .from('club_members')
     .select('*')
     .eq('user_id', userId)
     .limit(1)
     .maybeSingle()
-  return data as ClubMember | null
+  return data
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -46,50 +46,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [membership, setMembership] = useState<ClubMember | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    let ignore = false
-
-    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
-      if (ignore) return
-      setSession(s)
-      if (s?.user.id) {
-        const [p, m] = await Promise.all([
-          fetchProfile(s.user.id).catch(() => null),
-          fetchMembership(s.user.id).catch(() => null),
-        ])
-        if (ignore) return
-        setProfile(p)
-        setMembership(m)
-      }
-      setLoading(false)
-    }).catch(() => {
-      if (!ignore) setLoading(false)
-    })
-
+    // onAuthStateChange fires INITIAL_SESSION on mount — handles initial load
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, s) => {
-        if (ignore) return
+      (event, s) => {
         setSession(s)
+
         if (s?.user.id) {
-          const [p, m] = await Promise.all([
-            fetchProfile(s.user.id).catch(() => null),
-            fetchMembership(s.user.id).catch(() => null),
-          ])
-          if (ignore) return
-          setProfile(p)
-          setMembership(m)
+          // Use setTimeout to avoid Supabase deadlock with auth state change
+          setTimeout(async () => {
+            const [p, m] = await Promise.all([
+              fetchProfile(s.user.id).catch(() => null),
+              fetchMembership(s.user.id).catch(() => null),
+            ])
+            setProfile(p)
+            setMembership(m)
+            setLoading(false)
+          }, 0)
         } else {
           setProfile(null)
           setMembership(null)
+          setLoading(false)
         }
       }
     )
 
-    return () => {
-      ignore = true
-      subscription.unsubscribe()
-    }
+    return () => subscription.unsubscribe()
   }, [])
 
   const refreshProfile = async () => {
