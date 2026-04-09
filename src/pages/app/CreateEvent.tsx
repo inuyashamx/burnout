@@ -10,7 +10,6 @@ export default function CreateEvent() {
   const [description, setDescription] = useState('')
   const [dateTime, setDateTime] = useState('')
   const [location, setLocation] = useState('')
-  const [eventType, setEventType] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -28,7 +27,7 @@ export default function CreateEvent() {
       description: description.trim() || null,
       date_time: new Date(dateTime).toISOString(),
       location: location.trim() || null,
-      event_type: eventType.trim() || null,
+      event_type: null,
       created_by: session.user.id,
     })
 
@@ -87,17 +86,6 @@ export default function CreateEvent() {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Ej: Plaza Central, Autódromo"
-          className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors"
-        />
-      </label>
-
-      <label className="block mb-5">
-        <span className="text-xs tracking-wider uppercase text-white/30 mb-1.5 block">Tipo de evento</span>
-        <input
-          type="text"
-          value={eventType}
-          onChange={(e) => setEventType(e.target.value)}
-          placeholder="Ej: Rodada, Meet, Arrancones, Reunión"
           className="w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 text-sm focus:outline-none focus:border-[var(--cyan)]/40 transition-colors"
         />
       </label>
