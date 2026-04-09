@@ -32,6 +32,16 @@ export default function MemberList() {
     refresh()
   }
 
+  const handleTransferLeader = async (memberId: string) => {
+    if (!confirm('¿Transferir el liderazgo? Tú pasarás a ser Admin.')) return
+    if (!membership?.id) return
+    // Make the target the new leader
+    await supabase.from('club_members').update({ role: 'leader' }).eq('id', memberId)
+    // Demote current leader to admin
+    await supabase.from('club_members').update({ role: 'admin' }).eq('id', membership.id)
+    refresh()
+  }
+
   return (
     <div className="p-5">
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/60 transition-colors mb-6">
@@ -64,7 +74,7 @@ export default function MemberList() {
               </span>
             </div>
             {isLeader && m.role !== 'leader' && (
-              <div className="flex gap-1 flex-shrink-0">
+              <div className="flex gap-1 flex-shrink-0 flex-wrap justify-end">
                 {m.role === 'member' ? (
                   <button
                     onClick={() => handlePromote(m.id, 'admin')}
@@ -80,6 +90,12 @@ export default function MemberList() {
                     Quitar admin
                   </button>
                 )}
+                <button
+                  onClick={() => handleTransferLeader(m.id)}
+                  className="px-2 py-1 rounded text-[10px] bg-[var(--cyan)]/10 text-[var(--cyan)] hover:bg-[var(--cyan)]/20 transition-colors"
+                >
+                  Dar líder
+                </button>
                 <button
                   onClick={() => handleRemove(m.id)}
                   className="px-2 py-1 rounded text-[10px] bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
