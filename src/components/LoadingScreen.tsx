@@ -5,7 +5,7 @@ export default function LoadingScreen() {
         <div className="absolute inset-0 rounded-full border-2 border-white/5" />
         <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[var(--cyan)] animate-spin" />
       </div>
-      <span className="font-display text-lg tracking-wide text-white/40">YCEV</span>
+      <span className="font-display text-lg tracking-wide text-white/40">BURNOUT</span>
     </div>
   )
 }

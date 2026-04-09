@@ -78,10 +78,10 @@ export default function Landing() {
               className="absolute inset-0 rounded-full border border-[var(--cyan)]/30"
               style={{ background: 'radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%)' }}
             />
-            <span className="font-display text-cyan text-lg leading-none tracking-tight">V</span>
+            <span className="font-display text-cyan text-lg leading-none tracking-tight">B</span>
           </div>
           <span className="font-display text-lg tracking-wide text-white/90 hidden sm:inline">
-            YCEV
+            BURNOUT
           </span>
         </div>
         <InstallPWA />
@@ -96,18 +96,15 @@ export default function Landing() {
         </div>
 
         <h1 className="animate-fade-in-up delay-200">
-          <span className="block font-display text-[clamp(3rem,12vw,7rem)] leading-[0.9] tracking-tight text-white">
-            YA CASI ES
-          </span>
           <span
-            className="block font-display text-[clamp(3.5rem,14vw,8.5rem)] leading-[0.85] tracking-tight animate-reveal-text delay-400"
+            className="block font-display text-[clamp(4rem,16vw,10rem)] leading-[0.85] tracking-tight animate-reveal-text delay-400"
             style={{
               background: 'linear-gradient(135deg, var(--cyan-light) 0%, var(--cyan) 40%, var(--cyan-dark) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
           >
-            VIERNES
+            BURNOUT
           </span>
         </h1>
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ycev-v1';
+const CACHE_NAME = 'burnout-v1';
 const PRECACHE_URLS = ['/', '/index.html'];
 
 self.addEventListener('install', (e) => {

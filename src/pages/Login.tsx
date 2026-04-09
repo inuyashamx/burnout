@@ -46,7 +46,7 @@ export default function Login() {
                 className="absolute inset-0 rounded-full border border-[var(--cyan)]/20"
                 style={{ background: 'radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%)' }}
               />
-              <span className="font-display text-[var(--cyan)] text-3xl leading-none">V</span>
+              <span className="font-display text-[var(--cyan)] text-3xl leading-none">B</span>
             </div>
           </div>
 
